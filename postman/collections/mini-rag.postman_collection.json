@@ -2,49 +2,29 @@
   "info": {
     "_postman_id": "406f1134-8a4c-4164-a2d6-af4207151e18",
     "name": "mini-rag",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "46901353"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Welcome",
+      "name": "/",
       "id": "7b99b44f-6963-4593-88c5-a96ac78fb89b",
       "request": {
         "method": "GET",
-        "header": []
-      },
-      "response": []
-    }
-  ],
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "id": "31d33889-e84b-4b26-bd59-d27476301922",
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "id": "962b91eb-7800-4a6d-9aab-37a6b60bdfb4",
-        "type": "text/javascript",
-        "packages": {},
-        "requests": {},
-        "exec": [
-          ""
-        ]
+        "url": {
+          "raw": "{{api}}/",
+          "host": [
+            "{{api}}"
+          ],
+          "path": [
+            ""
+          ]
+        }
       }
     }
   ],
   "variable": [
     {
-      "id": "e1dd0dd8-2da9-4074-90f1-1cfaf9ab58d5",
+      "id": "81539f59-0e2e-4a1e-9460-c2f67a689af3",
       "key": "api",
       "value": "http://127.0.0.1:8000/"
     }
