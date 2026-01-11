@@ -1,0 +1,14 @@
+{
+  "workspace": {
+    "id": "39499496-240b-4b12-8940-eda9324715e3"
+  },
+  "entities": {
+    "collections": [
+      "../postman/collections/mini-rag.postman_collection.json"
+    ],
+    "environments": [],
+    "specs": [],
+    "flows": [],
+    "globals": []
+  }
+}
