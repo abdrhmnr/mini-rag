@@ -14,4 +14,17 @@ $ conda create -n mini-rag python= 3.8
 ```bash 
 $ conda activate mini-rag-app
 ```
+## Installation 
+## Install the required packages 
+```bash 
+$ pip install -r requirements.txt 
+```
+
+## Setup the environment variables 
+ ```bash 
+ $ cp .env.example .env 
+ ```
+
+ Set your environment variable in the '.env' file. Like 'OPENAI_APU_KEY' value.
+ 
 
