@@ -30,5 +30,5 @@ $ pip install -r requirements.txt
 
 ## Run the fastAPI server 
 ```bash 
-$ uvicorn main:app --reload --host 0.0.0.0 --port 5000
+$ uvicorn main:app --reload --host 0.0.0.0 --port 5005
 ```
