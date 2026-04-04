@@ -1,6 +1,8 @@
-from fastapi import FastAPI
-app=FastAPI()
+from email.mime import base
 
-@app.get("/welcome")
-def welcome():
-    return {"message": "Welcome to mini-rag!"}
+from fastapi import FastAPI
+from routes.base import base_router
+
+app = FastAPI()
+
+app.include_router(base_router)
