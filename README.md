@@ -40,5 +40,5 @@ Set your environment variable in the '.env' file. Like 'OPENAI_APU_KEY' value.
 ## Run the fastAPI server
 
 ```bash
-$ uvicorn main:app --reload --host 0.0.0.0 --port 8888
+$ uvicorn src.main:app --reload --host 0.0.0.0 --port 8888
 ```

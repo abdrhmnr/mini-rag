@@ -1,0 +1,573 @@
+import os
+import warnings
+from openpyxl.drawing.image import Image
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.chart import BarChart, PieChart, LineChart, Reference
+from openpyxl import Workbook
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
+warnings.filterwarnings('ignore')
+
+# ============================================
+# 1) إنشاء البيانات
+# ============================================
+data = {
+    'Order_ID': [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+                 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+                 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029,
+                 2030, 2031, 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039,
+                 2040, 2041, 2042, 2043, 2044, 2045, 2046, 2047, 2048, 2049,
+                 2050, 2051, 2052, 2053, 2054, 2055, 2056, 2057, 2058, 2059,
+                 2060, 2061, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069,
+                 2070, 2071, 2072, 2073, 2074, 2075, 2076, 2077, 2078, 2079,
+                 2080, 2081, 2082, 2083, 2084, 2085, 2086, 2087, 2088, 2089,
+                 2090, 2091, 2092, 2093, 2094, 2095, 2096, 2097, 2098, 2099,
+                 2100, 2101, 2102, 2103, 2104, 2105, 2106, 2107, 2108, 2109,
+                 2110, 2111, 2112, 2113, 2114, 2115, 2116, 2117, 2118, 2119,
+                 2120, 2121, 2122, 2123, 2124, 2125, 2126, 2127, 2128, 2129,
+                 2130, 2131, 2132, 2133, 2134, 2135, 2136, 2137, 2138, 2139,
+                 2140, 2141, 2142, 2143, 2144, 2145, 2146, 2147, 2148, 2149],
+    'Date': ['2024-05-16', '2024-01-30', '2024-01-06', '2024-06-09', '2024-02-08',
+             '2024-06-18', '2024-02-23', '2024-07-15', '2024-01-27', '2024-03-07',
+             '2024-07-19', '2024-07-12', '2024-04-14', '2024-05-09', '2024-03-18',
+             '2024-03-04', '2024-01-17', '2024-01-14', '2024-02-19', '2024-03-27',
+             '2024-01-11', '2024-02-02', '2024-01-09', '2024-02-18', '2024-05-03',
+             '2024-01-12', '2024-04-11', '2024-04-29', '2024-01-26', '2024-01-15',
+             '2024-04-12', '2024-05-06', '2024-04-23', '2024-01-06', '2024-07-17',
+             '2024-03-27', '2024-04-10', '2024-01-07', '2024-01-17', '2024-07-02',
+             '2024-06-16', '2024-07-18', '2024-06-24', '2024-01-13', '2024-04-22',
+             '2024-05-24', '2024-01-28', '2024-01-14', '2024-03-12', '2024-01-30',
+             '2024-03-11', '2024-04-14', '2024-06-12', '2024-04-08', '2024-04-19',
+             '2024-01-24', '2024-06-12', '2024-07-10', '2024-01-07', '2024-01-29',
+             '2024-05-23', '2024-06-24', '2024-04-21', '2024-05-17', '2024-07-15',
+             '2024-01-15', '2024-01-30', '2024-03-15', '2024-07-09', '2024-06-29',
+             '2024-02-16', '2024-02-25', '2024-01-01', '2024-05-24', '2024-04-11',
+             '2024-04-06', '2024-06-18', '2024-02-25', '2024-05-26', '2024-05-17',
+             '2024-02-05', '2024-04-17', '2024-06-08', '2024-03-02', '2024-04-20',
+             '2024-04-02', '2024-01-10', '2024-03-02', '2024-04-29', '2024-03-31',
+             '2024-07-11', '2024-01-06', '2024-03-19', '2024-03-06', '2024-01-20',
+             '2024-05-20', '2024-03-07', '2024-03-10', '2024-05-21', '2024-02-12',
+             '2024-01-15', '2024-02-16', '2024-02-02', '2024-04-20', '2024-05-05',
+             '2024-04-18', '2024-06-28', '2024-03-06', '2024-02-04', '2024-01-22',
+             '2024-01-10', '2024-07-10', '2024-04-27', '2024-05-05', '2024-04-29',
+             '2024-04-23', '2024-06-06', '2024-07-09', '2024-02-26', '2024-05-25',
+             '2024-01-02', '2024-06-07', '2024-01-17', '2024-05-04', '2024-04-28',
+             '2024-01-24', '2024-03-02', '2024-07-19', '2024-06-27', '2024-05-25',
+             '2024-02-07', '2024-04-01', '2024-02-14', '2024-05-03', '2024-04-19',
+             '2024-01-01', '2024-01-27', '2024-06-08', '2024-05-25', '2024-01-25',
+             '2024-05-31', '2024-06-04', '2024-05-26', '2024-01-13', '2024-03-15',
+             '2024-06-19', '2024-04-18', '2024-05-03', '2024-03-02', '2024-07-01'],
+    'Product': ['Desk', 'Desk', 'Sofa', 'Desk', 'Desk', 'Table', 'Chair', 'Lamp', 'Lamp', 'Lamp',
+                'Lamp', 'Chair', 'Table', 'Sofa', 'Desk', 'Sofa', 'Desk', 'Chair', 'Table', 'Chair',
+                'Table', 'Lamp', 'Desk', 'Sofa', 'Chair', 'Lamp', 'Lamp', 'Desk', 'Desk', 'Desk',
+                'Table', 'Desk', 'Table', 'Lamp', 'Chair', 'Desk', 'Table', 'Table', 'Table', 'Lamp',
+                'Desk', 'Sofa', 'Chair', 'Sofa', 'Chair', 'Sofa', 'Chair', 'Sofa', 'Sofa', 'Sofa',
+                'Chair', 'Table', 'Lamp', 'Chair', 'Lamp', 'Table', 'Chair', 'Table', 'Lamp', 'Table',
+                'Desk', 'Table', 'Desk', 'Desk', 'Table', 'Desk', 'Desk', 'Sofa', 'Sofa', 'Table',
+                'Desk', 'Lamp', 'Sofa', 'Chair', 'Desk', 'Table', 'Chair', 'Table', 'Lamp', 'Chair',
+                'Table', 'Sofa', 'Table', 'Chair', 'Table', 'Table', 'Desk', 'Table', 'Table', 'Chair',
+                'Lamp', 'Table', 'Chair', 'Sofa', 'Table', 'Table', 'Desk', 'Chair', 'Desk', 'Desk',
+                'Sofa', 'Desk', 'Table', 'Lamp', 'Chair', 'Chair', 'Chair', 'Desk', 'Desk', 'Chair',
+                'Sofa', 'Desk', 'Sofa', 'Chair', 'Chair', 'Sofa', 'Chair', 'Chair', 'Table', 'Chair',
+                'Lamp', 'Lamp', 'Table', 'Table', 'Table', 'Lamp', 'Table', 'Chair', 'Desk', 'Table',
+                'Table', 'Sofa', 'Table', 'Chair', 'Table', 'Table', 'Sofa', 'Desk', 'Chair', 'Desk',
+                'Sofa', 'Chair', 'Desk', 'Table', 'Table', 'Sofa', 'Chair', 'Desk', 'Chair', 'Desk'],
+    'Region': ['West', 'North', 'West', 'East', 'North', 'North', 'North', 'West', 'North', 'South',
+               'West', 'North', 'West', 'West', 'South', 'North', 'West', 'South', 'North', 'South',
+               'South', 'West', 'North', 'North', 'West', 'North', 'East', 'North', 'East', 'East',
+               'East', 'West', 'East', 'West', 'East', 'West', 'West', 'East', 'South', 'East',
+               'South', 'North', 'South', 'East', 'East', 'North', 'East', 'West', 'West', 'East',
+               'East', 'East', 'East', 'West', 'West', 'North', 'East', 'North', 'East', 'North',
+               'East', 'East', 'South', 'West', 'South', 'West', 'East', 'North', 'North', 'East',
+               'West', 'East', 'East', 'South', 'West', 'East', 'North', 'South', 'East', 'East',
+               'North', 'West', 'West', 'West', 'North', 'West', 'West', 'East', 'East', 'East',
+               'North', 'North', 'East', 'East', 'East', 'South', 'West', 'East', 'South', 'West',
+               'North', 'West', 'East', 'East', 'South', 'South', 'North', 'East', 'South', 'North',
+               'East', 'East', 'East', 'East', 'South', 'East', 'North', 'West', 'North', 'East',
+               'East', 'South', 'South', 'North', 'South', 'South', 'East', 'South', 'North', 'South',
+               'West', 'East', 'North', 'North', 'North', 'South', 'North', 'West', 'North', 'South',
+               'West', 'North', 'West', 'West', 'East', 'North', 'North', 'East', 'West', 'South'],
+    'Quantity': [6, 7, 5, 10, 3, 6, 2, 8, 5, 4, 6, 3, 6, 4, 10, 6, 7, 7, 3, 8,
+                 3, 4, 9, 10, 4, 1, 4, 2, 10, 5, 9, 8, 8, 3, 9, 5, 6, 9, 8, 10,
+                 9, 10, 3, 1, 8, 7, 8, 8, 7, 4, 3, 5, 2, 1, 4, 2, 8, 7, 9, 10,
+                 8, 7, 7, 3, 2, 8, 1, 7, 1, 10, 8, 8, 3, 8, 2, 5, 9, 1, 3, 8,
+                 2, 8, 6, 8, 1, 2, 1, 3, 6, 6, 7, 6, 10, 2, 2, 5, 7, 5, 3, 2,
+                 3, 6, 9, 3, 7, 4, 4, 5, 3, 9, 5, 3, 4, 2, 8, 1, 7, 2, 6, 7,
+                 8, 9, 10, 1, 10, 6, 8, 7, 9, 10, 4, 6, 6, 9, 4, 4, 9, 6, 1, 4,
+                 2, 8, 5, 4, 7, 5, 10, 8, 5, 8],
+    'Revenue': [2460, 931, 760, 740, 672, 2040, 558, 2712, 915, 1160,
+                1896, 423, 1770, 1920, 4120, 2562, 714, 861, 1080, 2640,
+                378, 720, 3978, 4440, 1044, 418, 1376, 414, 4070, 2190,
+                3843, 3144, 2032, 252, 2169, 290, 858, 1656, 680, 4550,
+                2394, 2730, 1032, 494, 3360, 1372, 400, 1216, 2261, 880,
+                357, 915, 692, 475, 1236, 430, 1744, 2156, 2628, 3130,
+                2568, 3024, 1757, 153, 556, 3592, 272, 630, 385, 4300,
+                3816, 3264, 492, 2392, 306, 1795, 1305, 316, 843, 1896,
+                846, 2472, 2190, 2736, 286, 630, 222, 1221, 1404, 2160,
+                588, 2670, 1730, 502, 912, 700, 3360, 1645, 1455, 238,
+                627, 816, 3825, 771, 3451, 1112, 1300, 595, 867, 2088,
+                2425, 195, 1452, 986, 3528, 419, 2863, 730, 2070, 1323,
+                2624, 1773, 2490, 73, 1130, 2796, 2280, 910, 2988, 1830,
+                284, 1644, 2580, 3906, 1336, 324, 3267, 1812, 493, 960,
+                278, 1104, 505, 772, 1967, 2455, 3880, 3464, 1475, 2496],
+    'Profit': [1079.7, 260.68, 184.39, 151.6, 153.99, 731.92, 176.44, 1344.29, 444.61, 355.2,
+               867.77, 91.18, 676.84, 772.35, 880.02, 1214.14, 264.81, 195.76, 331.74, 1130.98,
+               118.3, 341.92, 1442.41, 1174.03, 316.5, 153.33, 611.58, 133.95, 967.6, 1081.28,
+               1785.26, 683.95, 1013.89, 93.81, 902.65, 144.05, 407.16, 777.18, 325.57, 1889.82,
+               1138.83, 552.33, 230.62, 134.41, 1028.44, 355.67, 171.76, 427.72, 762.89, 383.39,
+               130.61, 184.83, 270.72, 123.09, 297.54, 94.14, 567.73, 1073, 894.68, 1384.75,
+               588.28, 927.31, 800.87, 48.74, 270.08, 917.33, 59.73, 264.53, 131.64, 1195,
+               1006.65, 769.11, 187.32, 545.64, 97.43, 760.6, 443.25, 81.39, 268.79, 494.64,
+               295.72, 621.84, 474.28, 989.34, 96.32, 182.36, 45.34, 258.77, 303.68, 882.58,
+               223.06, 1165.75, 810.88, 193.68, 403.33, 224.21, 1493.5, 367.98, 593.16, 114.28,
+               165.38, 289.93, 947.05, 354.3, 834.46, 410.37, 507.83, 130.64, 433.22, 588.07,
+               509.96, 85.58, 596.25, 234.78, 874.97, 149.09, 815.33, 355.43, 578.9, 537.5,
+               902.04, 476.19, 747.55, 29.65, 366.22, 1012.84, 595.27, 425.04, 1113.51, 618.69,
+               107.41, 477.34, 874.49, 1642.78, 311.3, 136.15, 849.11, 705.43, 121.68, 330.04,
+               125.99, 358.05, 179.24, 375.97, 753.38, 908.49, 1300.95, 1115.45, 719.45, 882.23]
+}
+
+df = pd.DataFrame(data)
+df['Date'] = pd.to_datetime(df['Date'])
+
+print("=" * 60)
+print("        تقرير تحليل بيانات المبيعات")
+print("=" * 60)
+print(f"\nعدد الصفوف الأصلي: {len(df)}")
+
+# ============================================
+# 2) تنظيف البيانات
+# ============================================
+print("\n--- مرحلة تنظيف البيانات ---")
+
+# إزالة المكررات
+duplicates_count = df.duplicated().sum()
+df = df.drop_duplicates()
+print(f"عدد الصفوف المكررة المحذوفة: {duplicates_count}")
+
+# إزالة القيم الفارغة
+nulls_before = df.isnull().sum().sum()
+df = df.dropna()
+print(f"عدد القيم الفارغة المحذوفة: {nulls_before}")
+
+# التأكد من أن القيم الرقمية موجبة
+negative_qty = (df['Quantity'] <= 0).sum()
+negative_rev = (df['Revenue'] <= 0).sum()
+negative_prf = (df['Profit'] < 0).sum()
+df = df[df['Quantity'] > 0]
+df = df[df['Revenue'] > 0]
+print(f"صفوف بكميات سالبة/صفرية: {negative_qty}")
+print(f"صفوف بإيرادات سالبة/صفرية: {negative_rev}")
+
+print(f"\nعدد الصفوف بعد التنظيف: {len(df)}")
+
+# ============================================
+# 3) حساب المؤشرات (KPIs)
+# ============================================
+total_revenue = df['Revenue'].sum()
+total_profit = df['Profit'].sum()
+total_orders = len(df)
+avg_order_value = total_revenue / total_orders
+profit_margin = (total_profit / total_revenue) * 100
+
+print("\n--- مؤشرات الأداء الرئيسية (KPIs) ---")
+print(f"إجمالي الإيرادات: ${total_revenue:,.2f}")
+print(f"إجمالي الأرباح: ${total_profit:,.2f}")
+print(f"عدد الطلبات: {total_orders}")
+print(f"متوسط قيمة الطلب: ${avg_order_value:,.2f}")
+print(f"هامش الربح: {profit_margin:.1f}%")
+
+# ============================================
+# 4) تحليلات إضافية للرسوم البيانية
+# ============================================
+# مبيعات حسب المنتج
+product_summary = df.groupby('Product').agg(
+    Revenue=('Revenue', 'sum'),
+    Profit=('Profit', 'sum'),
+    Orders=('Order_ID', 'count')
+).reset_index()
+
+# مبيعات حسب المنطقة
+region_summary = df.groupby('Region').agg(
+    Revenue=('Revenue', 'sum'),
+    Profit=('Profit', 'sum'),
+    Orders=('Order_ID', 'count')
+).reset_index()
+
+# مبيعات حسب الشهر
+df['Month'] = df['Date'].dt.month
+df['Month_Name'] = df['Date'].dt.strftime('%b')
+month_order = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']
+monthly_summary = df.groupby(['Month', 'Month_Name']).agg(
+    Revenue=('Revenue', 'sum'),
+    Profit=('Profit', 'sum'),
+    Orders=('Order_ID', 'count')
+).reset_index().sort_values('Month')
+
+# ============================================
+# 5) إنشاء ملف Excel مع Dashboard
+# ============================================
+wb = Workbook()
+
+# ---- ألوان وأنماط ----
+dark_blue = "1B2A4A"
+medium_blue = "2E86AB"
+light_blue = "D6EAF8"
+green_color = "27AE60"
+gold_color = "F39C12"
+white_color = "FFFFFF"
+gray_color = "F2F3F4"
+
+header_font = Font(name='Calibri', bold=True, color=white_color, size=11)
+header_fill = PatternFill(start_color=dark_blue,
+                          end_color=dark_blue, fill_type='solid')
+kpi_title_font = Font(name='Calibri', bold=True, color=dark_blue, size=10)
+kpi_value_font = Font(name='Calibri', bold=True, color=medium_blue, size=20)
+kpi_label_font = Font(name='Calibri', bold=False, color="666666", size=9)
+title_font = Font(name='Calibri', bold=True, color=dark_blue, size=16)
+thin_border = Border(
+    left=Side(style='thin', color='D5D8DC'),
+    right=Side(style='thin', color='D5D8DC'),
+    top=Side(style='thin', color='D5D8DC'),
+    bottom=Side(style='thin', color='D5D8DC')
+)
+
+# ============================================
+# ورقة 1: البيانات النظيفة (Clean Data)
+# ============================================
+ws_data = wb.active
+ws_data.title = "Clean Data"
+
+# كتابة البيانات
+columns_to_write = ['Order_ID', 'Date', 'Product',
+                    'Region', 'Quantity', 'Revenue', 'Profit']
+df_clean = df[columns_to_write].copy()
+df_clean['Date'] = df_clean['Date'].dt.strftime('%Y-%m-%d')
+
+# العناوين
+for col_idx, col_name in enumerate(columns_to_write, 1):
+    cell = ws_data.cell(row=1, column=col_idx, value=col_name)
+    cell.font = header_font
+    cell.fill = header_fill
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+    cell.border = thin_border
+
+# البيانات
+for row_idx, row_data in enumerate(df_clean.values, 2):
+    for col_idx, value in enumerate(row_data, 1):
+        cell = ws_data.cell(row=row_idx, column=col_idx, value=value)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.border = thin_border
+        if row_idx % 2 == 0:
+            cell.fill = PatternFill(
+                start_color=gray_color, end_color=gray_color, fill_type='solid')
+
+# عرض الأعمدة
+ws_data.column_dimensions['A'].width = 12
+ws_data.column_dimensions['B'].width = 14
+ws_data.column_dimensions['C'].width = 12
+ws_data.column_dimensions['D'].width = 10
+ws_data.column_dimensions['E'].width = 12
+ws_data.column_dimensions['F'].width = 12
+ws_data.column_dimensions['G'].width = 12
+
+# ============================================
+# ورقة 2: ملخص التحليلات (Summary)
+# ============================================
+ws_summary = wb.create_sheet("Summary")
+
+# --- KPIs Section ---
+ws_summary.cell(row=1, column=1,
+                value="مؤشرات الأداء الرئيسية (KPIs)").font = title_font
+ws_summary.merge_cells('A1:F1')
+
+kpi_data = [
+    ("إجمالي الإيرادات", f"${total_revenue:,.0f}"),
+    ("إجمالي الأرباح", f"${total_profit:,.0f}"),
+    ("عدد الطلبات", f"{total_orders}"),
+]
+
+for i, (label, value) in enumerate(kpi_data):
+    col = i * 2 + 1
+    cell_val = ws_summary.cell(row=3, column=col, value=value)
+    cell_val.font = kpi_value_font
+    cell_val.alignment = Alignment(horizontal='center', vertical='center')
+    ws_summary.merge_cells(start_row=3, start_column=col,
+                           end_row=3, end_column=col + 1)
+
+    cell_lbl = ws_summary.cell(row=4, column=col, value=label)
+    cell_lbl.font = kpi_label_font
+    cell_lbl.alignment = Alignment(horizontal='center', vertical='center')
+    ws_summary.merge_cells(start_row=4, start_column=col,
+                           end_row=4, end_column=col + 1)
+
+# --- جدول حسب المنتج ---
+ws_summary.cell(row=6, column=1, value="ملخص حسب المنتج").font = Font(
+    name='Calibri', bold=True, color=dark_blue, size=13)
+headers_prod = ['Product', 'Revenue', 'Profit', 'Orders']
+for col_idx, h in enumerate(headers_prod, 1):
+    cell = ws_summary.cell(row=7, column=col_idx, value=h)
+    cell.font = header_font
+    cell.fill = header_fill
+    cell.alignment = Alignment(horizontal='center')
+    cell.border = thin_border
+
+for row_idx, row_data in enumerate(product_summary.values, 8):
+    for col_idx, value in enumerate(row_data, 1):
+        cell = ws_summary.cell(row=row_idx, column=col_idx, value=value)
+        cell.alignment = Alignment(horizontal='center')
+        cell.border = thin_border
+        if isinstance(value, float):
+            cell.number_format = '#,##0.00'
+
+# --- جدول حسب المنطقة ---
+start_row_region = 8 + len(product_summary) + 2
+ws_summary.cell(row=start_row_region - 1, column=1, value="ملخص حسب المنطقة").font = Font(
+    name='Calibri', bold=True, color=dark_blue, size=13)
+headers_reg = ['Region', 'Revenue', 'Profit', 'Orders']
+for col_idx, h in enumerate(headers_reg, 1):
+    cell = ws_summary.cell(row=start_row_region, column=col_idx, value=h)
+    cell.font = header_font
+    cell.fill = header_fill
+    cell.alignment = Alignment(horizontal='center')
+    cell.border = thin_border
+
+for row_idx, row_data in enumerate(region_summary.values, start_row_region + 1):
+    for col_idx, value in enumerate(row_data, 1):
+        cell = ws_summary.cell(row=row_idx, column=col_idx, value=value)
+        cell.alignment = Alignment(horizontal='center')
+        cell.border = thin_border
+        if isinstance(value, float):
+            cell.number_format = '#,##0.00'
+
+# --- جدول حسب الشهر ---
+start_row_month = start_row_region + len(region_summary) + 3
+ws_summary.cell(row=start_row_month - 1, column=1, value="ملخص حسب الشهر").font = Font(
+    name='Calibri', bold=True, color=dark_blue, size=13)
+headers_month = ['Month_Num', 'Month', 'Revenue', 'Profit', 'Orders']
+for col_idx, h in enumerate(headers_month, 1):
+    cell = ws_summary.cell(row=start_row_month, column=col_idx, value=h)
+    cell.font = header_font
+    cell.fill = header_fill
+    cell.alignment = Alignment(horizontal='center')
+    cell.border = thin_border
+
+for row_idx, row_data in enumerate(monthly_summary.values, start_row_month + 1):
+    for col_idx, value in enumerate(row_data, 1):
+        cell = ws_summary.cell(row=row_idx, column=col_idx, value=value)
+        cell.alignment = Alignment(horizontal='center')
+        cell.border = thin_border
+        if isinstance(value, float):
+            cell.number_format = '#,##0.00'
+
+# عرض أعمدة Summary
+for col_letter in ['A', 'B', 'C', 'D', 'E', 'F']:
+    ws_summary.column_dimensions[col_letter].width = 18
+
+# ============================================
+# ورقة 3: Dashboard
+# ============================================
+ws_dash = wb.create_sheet("Dashboard")
+ws_dash.sheet_properties.tabColor = "2E86AB"
+
+# --- عنوان الداشبورد ---
+ws_dash.merge_cells('A1:P2')
+title_cell = ws_dash.cell(row=1, column=1, value="📊  Sales Dashboard  📊")
+title_cell.font = Font(name='Calibri', bold=True, color=white_color, size=22)
+title_cell.fill = PatternFill(
+    start_color=dark_blue, end_color=dark_blue, fill_type='solid')
+title_cell.alignment = Alignment(horizontal='center', vertical='center')
+
+# تلوين صف العنوان
+for col in range(1, 17):
+    cell = ws_dash.cell(row=1, column=col)
+    cell.fill = PatternFill(start_color=dark_blue,
+                            end_color=dark_blue, fill_type='solid')
+    cell = ws_dash.cell(row=2, column=col)
+    cell.fill = PatternFill(start_color=dark_blue,
+                            end_color=dark_blue, fill_type='solid')
+
+# --- KPI Cards ---
+kpi_cards = [
+    ("💰 Total Revenue", f"${total_revenue:,.0f}", medium_blue),
+    ("📈 Total Profit", f"${total_profit:,.0f}", green_color),
+    ("📦 Total Orders", f"{total_orders}", gold_color),
+]
+
+kpi_start_col = [1, 6, 11]
+for i, (label, value, color) in enumerate(kpi_cards):
+    col_start = kpi_start_col[i]
+    col_end = col_start + 4
+
+    # خلية القيمة
+    ws_dash.merge_cells(start_row=4, start_column=col_start,
+                        end_row=4, end_column=col_end)
+    val_cell = ws_dash.cell(row=4, column=col_start, value=value)
+    val_cell.font = Font(name='Calibri', bold=True, color=color, size=24)
+    val_cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # خلية التسمية
+    ws_dash.merge_cells(start_row=5, start_column=col_start,
+                        end_row=5, end_column=col_end)
+    lbl_cell = ws_dash.cell(row=5, column=col_start, value=label)
+    lbl_cell.font = Font(name='Calibri', bold=True, color="555555", size=11)
+    lbl_cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    # حدود بسيطة للكارد
+    for r in range(3, 6):
+        for c in range(col_start, col_end + 1):
+            cell = ws_dash.cell(row=r, column=c)
+            cell.fill = PatternFill(
+                start_color="F8F9FA", end_color="F8F9FA", fill_type='solid')
+            cell.border = Border(
+                left=Side(style='thin', color='DEE2E6') if c == col_start else Side(
+                    style=None),
+                right=Side(style='thin', color='DEE2E6') if c == col_end else Side(
+                    style=None),
+                top=Side(style='thin', color='DEE2E6') if r == 3 else Side(
+                    style=None),
+                bottom=Side(style='thin', color='DEE2E6') if r == 5 else Side(
+                    style=None),
+            )
+
+# ============================================
+# إنشاء الرسوم البيانية بـ matplotlib وإدراجها كصور
+# ============================================
+colors_palette = ['#2E86AB', '#A23B72', '#F18F01', '#C73E1D', '#3B1F2B']
+plt.rcParams['font.size'] = 10
+
+# --- رسم 1: إيرادات حسب المنتج (Bar Chart) ---
+fig1, ax1 = plt.subplots(figsize=(6, 4))
+bars = ax1.bar(product_summary['Product'], product_summary['Revenue'],
+               color=colors_palette[:len(product_summary)], edgecolor='white', linewidth=1.5)
+ax1.set_title('Revenue by Product', fontsize=14,
+              fontweight='bold', color='#1B2A4A', pad=15)
+ax1.set_ylabel('Revenue ($)', fontsize=10)
+ax1.spines['top'].set_visible(False)
+ax1.spines['right'].set_visible(False)
+ax1.grid(axis='y', alpha=0.3)
+for bar, val in zip(bars, product_summary['Revenue']):
+    ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 200,
+             f'${val:,.0f}', ha='center', va='bottom', fontsize=8, fontweight='bold')
+plt.tight_layout()
+fig1.savefig('chart1_product_revenue.png', dpi=150,
+             bbox_inches='tight', facecolor='white')
+plt.close(fig1)
+
+# --- رسم 2: حصة الإيرادات حسب المنطقة (Pie Chart) ---
+fig2, ax2 = plt.subplots(figsize=(5.5, 4))
+wedges, texts, autotexts = ax2.pie(
+    region_summary['Revenue'],
+    labels=region_summary['Region'],
+    autopct='%1.1f%%',
+    colors=colors_palette[:len(region_summary)],
+    startangle=90,
+    pctdistance=0.85,
+    wedgeprops=dict(width=0.5, edgecolor='white', linewidth=2)
+)
+for text in autotexts:
+    text.set_fontsize(9)
+    text.set_fontweight('bold')
+ax2.set_title('Revenue Share by Region', fontsize=14,
+              fontweight='bold', color='#1B2A4A', pad=15)
+plt.tight_layout()
+fig2.savefig('chart2_region_pie.png', dpi=150,
+             bbox_inches='tight', facecolor='white')
+plt.close(fig2)
+
+# --- رسم 3: الإيرادات والأرباح الشهرية (Line Chart) ---
+fig3, ax3 = plt.subplots(figsize=(6, 4))
+ax3.plot(monthly_summary['Month_Name'], monthly_summary['Revenue'],
+         marker='o', linewidth=2.5, color='#2E86AB', label='Revenue', markersize=7)
+ax3.plot(monthly_summary['Month_Name'], monthly_summary['Profit'],
+         marker='s', linewidth=2.5, color='#27AE60', label='Profit', markersize=7)
+ax3.fill_between(monthly_summary['Month_Name'],
+                 monthly_summary['Revenue'], alpha=0.1, color='#2E86AB')
+ax3.fill_between(monthly_summary['Month_Name'],
+                 monthly_summary['Profit'], alpha=0.1, color='#27AE60')
+ax3.set_title('Monthly Revenue & Profit Trend', fontsize=14,
+              fontweight='bold', color='#1B2A4A', pad=15)
+ax3.set_ylabel('Amount ($)', fontsize=10)
+ax3.legend(frameon=True, fancybox=True, shadow=True)
+ax3.spines['top'].set_visible(False)
+ax3.spines['right'].set_visible(False)
+ax3.grid(axis='y', alpha=0.3)
+plt.tight_layout()
+fig3.savefig('chart3_monthly_trend.png', dpi=150,
+             bbox_inches='tight', facecolor='white')
+plt.close(fig3)
+
+# --- رسم 4: عدد الطلبات حسب المنتج والمنطقة (Stacked Bar) ---
+pivot_orders = df.pivot_table(
+    index='Product', columns='Region', values='Order_ID', aggfunc='count', fill_value=0)
+fig4, ax4 = plt.subplots(figsize=(6, 4))
+pivot_orders.plot(kind='bar', stacked=True, ax=ax4, color=colors_palette[:len(pivot_orders.columns)],
+                  edgecolor='white', linewidth=0.8)
+ax4.set_title('Orders by Product & Region', fontsize=14,
+              fontweight='bold', color='#1B2A4A', pad=15)
+ax4.set_ylabel('Number of Orders', fontsize=10)
+ax4.set_xlabel('')
+ax4.spines['top'].set_visible(False)
+ax4.spines['right'].set_visible(False)
+ax4.legend(title='Region', frameon=True, fancybox=True)
+ax4.grid(axis='y', alpha=0.3)
+plt.xticks(rotation=0)
+plt.tight_layout()
+fig4.savefig('chart4_orders_stacked.png', dpi=150,
+             bbox_inches='tight', facecolor='white')
+plt.close(fig4)
+
+# ============================================
+# إدراج الرسوم في Dashboard
+# ============================================
+img1 = Image('chart1_product_revenue.png')
+img1.width = 450
+img1.height = 300
+ws_dash.add_image(img1, 'A7')
+
+img2 = Image('chart2_region_pie.png')
+img2.width = 420
+img2.height = 300
+ws_dash.add_image(img2, 'I7')
+
+img3 = Image('chart3_monthly_trend.png')
+img3.width = 450
+img3.height = 300
+ws_dash.add_image(img3, 'A24')
+
+img4 = Image('chart4_orders_stacked.png')
+img4.width = 450
+img4.height = 300
+ws_dash.add_image(img4, 'I24')
+
+# ضبط عرض أعمدة الداشبورد
+for col_letter in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P']:
+    ws_dash.column_dimensions[col_letter].width = 9
+
+# ============================================
+# 6) حفظ الملف
+# ============================================
+output_file = "Sales_Dashboard_Report.xlsx"
+wb.save(output_file)
+
+print(f"\n{'=' * 60}")
+print(f"✅ تم إنشاء الملف بنجاح: {output_file}")
+print(f"{'=' * 60}")
+print(f"\nالملف يحتوي على 3 أوراق:")
+print(f"  1. Clean Data   - البيانات بعد التنظيف ({len(df)} صف)")
+print(f"  2. Summary      - جداول ملخصة حسب المنتج والمنطقة والشهر")
+print(f"  3. Dashboard    - لوحة بيانات تفاعلية مع:")
+print(f"     • 3 مؤشرات أداء (KPIs)")
+print(f"     • 4 رسوم بيانية")
+
+# تنظيف ملفات الصور المؤقتة
+for f in ['chart1_product_revenue.png', 'chart2_region_pie.png',
+          'chart3_monthly_trend.png', 'chart4_orders_stacked.png']:
+    if os.path.exists(f):
+        os.remove(f)
+
+print(f"\n🧹 تم تنظيف الملفات المؤقتة")
+print(f"🎉 افتح الملف '{output_file}' للاطلاع على النتائج!")
